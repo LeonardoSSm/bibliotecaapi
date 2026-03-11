@@ -15,8 +15,8 @@
     table { border-collapse: collapse; width: 100%; margin: 6px 0 10px; }
     th, td { border: 1px solid #cbd5e1; padding: 4px 5px; vertical-align: top; }
     th { background: #e2e8f0; }
-    pre { background: #f3f4f6; color: #111827; border: 1px solid #d1d5db; padding: 6px; border-radius: 4px; overflow-x: auto; font-size: 9px; line-height: 1.25; margin: 5px 0; }
-    code { font-family: Consolas, "Courier New", monospace; color: #111827; }
+    pre { background: #020b22; color: #f8fafc; border: 1px solid #0f172a; padding: 6px; border-radius: 2px; overflow-x: auto; font-size: 9px; line-height: 1.25; margin: 5px 0; }
+    code { font-family: Consolas, "Courier New", monospace; color: inherit; }
     ol, ul { margin: 4px 0 6px 18px; padding: 0; }
     li { margin: 1px 0; }
   </style>
@@ -82,26 +82,26 @@
 
   <h2>3) Evidencia do TDD</h2>
   <h3>RED</h3>
-  <pre><code>[ERROR] package br.com...reserva.model does not exist
+  <pre style="background:#020b22;color:#f8fafc;border:1px solid #0f172a;padding:6px;border-radius:2px;"><code style="color:#f8fafc;">[ERROR] package br.com...reserva.model does not exist
 [ERROR] package br.com...reserva.repository does not exist
 [ERROR] cannot find symbol class ReservaService</code></pre>
 
   <h3>GREEN</h3>
-  <pre><code>&lt;testsuite name="br.com...ReservaServiceTest" tests="5" errors="0" failures="0" skipped="0" /&gt;</code></pre>
+  <pre style="background:#020b22;color:#f8fafc;border:1px solid #0f172a;padding:6px;border-radius:2px;"><code style="color:#f8fafc;">&lt;testsuite name="br.com...ReservaServiceTest" tests="5" errors="0" failures="0" skipped="0" /&gt;</code></pre>
 
   <h3>REFACTOR</h3>
   <p>Servico reorganizado com: <code>buscarLivroPorId</code>, <code>buscarLeitorPorId</code>, <code>validarReservaDuplicada</code>, <code>validarLivroDisponivel</code>.</p>
 
   <h2>4) Trechos de codigo (TDD + regras)</h2>
   <h3>Testes (cenarios principais)</h3>
-  <pre><code>@DisplayName("Deve criar reserva ativa com prazo padrão e reduzir quantidade disponível do livro")
+  <pre style="background:#020b22;color:#f8fafc;border:1px solid #0f172a;padding:6px;border-radius:2px;"><code style="color:#f8fafc;">@DisplayName("Deve criar reserva ativa com prazo padrão e reduzir quantidade disponível do livro")
 @DisplayName("Deve lançar erro ao reservar livro sem quantidade disponível")
 @DisplayName("Deve lançar erro ao tentar criar reserva ativa duplicada para o mesmo livro e leitor")
 @DisplayName("Deve cancelar reserva ativa e devolver uma unidade para quantidade disponível")
 @DisplayName("Deve lançar erro ao cancelar uma reserva inexistente")</code></pre>
 
   <h3>Servico de negocio</h3>
-  <pre><code>public Reserva criarReserva(Long livroId, Long leitorId) {
+  <pre style="background:#020b22;color:#f8fafc;border:1px solid #0f172a;padding:6px;border-radius:2px;"><code style="color:#f8fafc;">public Reserva criarReserva(Long livroId, Long leitorId) {
     Livro livro = buscarLivroPorId(livroId);
     Leitor leitor = buscarLeitorPorId(leitorId);
     validarReservaDuplicada(livroId, leitorId);
@@ -125,7 +125,7 @@ public Reserva cancelarReserva(Long reservaId) {
 }</code></pre>
 
   <h3>Modelo + repositorio</h3>
-  <pre><code>public static Reserva criarAtiva(...) { return new Reserva(..., ReservaStatus.ATIVA, prazoDias); }
+  <pre style="background:#020b22;color:#f8fafc;border:1px solid #0f172a;padding:6px;border-radius:2px;"><code style="color:#f8fafc;">public static Reserva criarAtiva(...) { return new Reserva(..., ReservaStatus.ATIVA, prazoDias); }
 public void cancelar() { this.status = ReservaStatus.CANCELADA; }
 boolean existsByLivroIdAndLeitorIdAndStatus(Long livroId, Long leitorId, ReservaStatus status);
 public void reduzirQuantidadeDisponivel() { ... }
