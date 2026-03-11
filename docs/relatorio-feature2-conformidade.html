@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Conformidade Feature 2 - Integracao e Orquestracao</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 18px; color: #111827; line-height: 1.25; font-size: 10px; }
+    h1, h2, h3 { margin: 8px 0 6px; color: #0f172a; }
+    h1 { font-size: 15px; border-bottom: 1px solid #334155; padding-bottom: 4px; }
+    h2 { font-size: 12px; }
+    h3 { font-size: 10.5px; }
+    p { margin: 4px 0; }
+    .meta { background: #f8fafc; border: 1px solid #cbd5e1; padding: 6px 8px; margin-bottom: 8px; }
+    .ok { color: #166534; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 6px 0 10px; }
+    th, td { border: 1px solid #cbd5e1; padding: 4px 5px; vertical-align: top; }
+    th { background: #e2e8f0; }
+    code { font-family: Consolas, "Courier New", monospace; color: inherit; }
+    ol, ul { margin: 4px 0 6px 18px; padding: 0; }
+    li { margin: 1px 0; }
+    .pagebreak { page-break-before: always; }
+  </style>
+</head>
+<body>
+  <h1>Relatorio de Conformidade - Feature 2 (Integracao e Orquestracao)</h1>
+
+  <div class="meta">
+    <p><strong>Projeto:</strong> Biblioteca Universitaria API | <strong>Repo:</strong> git@github.com:LeonardoSSm/bibliotecaapi.git</p>
+    <p><strong>Data da validacao:</strong> 11/03/2026 | <strong>Base:</strong> PDF oficial da Feature 2</p>
+    <p><strong>Escopo:</strong> consumo de APIs externas de livros, orquestracao interna e endpoint REST consumivel</p>
+  </div>
+
+  <h2>1) Resumo da funcionalidade implementada</h2>
+  <p>
+    Foi implementada a funcionalidade de <strong>catalogo enriquecido</strong>, consumindo Google Books e Open Library,
+    cruzando dados com o acervo interno (livro/reserva) e retornando resultado consolidado com <code>scoreRecomendacao</code>.
+  </p>
+
+  <h2>2) Checklist de requisitos da Feature 2</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Requisito do PDF</th>
+        <th>Status</th>
+        <th>Evidencia objetiva</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1. Consumo de pelo menos 1 API externa relevante</td>
+        <td class="ok">ATENDIDO</td>
+        <td>Consumo de <code>Google Books API</code> + complemento via <code>Open Library API</code>.</td>
+      </tr>
+      <tr>
+        <td>2. Criacao de clients de API (OpenFeign recomendado)</td>
+        <td class="ok">ATENDIDO</td>
+        <td>
+          <code>GoogleBooksClient</code> e <code>OpenLibraryClient</code> com <code>@FeignClient</code>.
+        </td>
+      </tr>
+      <tr>
+        <td>3. Organizacao em camadas (Service e Controller)</td>
+        <td class="ok">ATENDIDO</td>
+        <td>
+          <code>LivrosIntegracaoService</code> (orquestracao/algoritmo) e
+          <code>LivrosIntegracaoController</code> (endpoint REST).
+        </td>
+      </tr>
+      <tr>
+        <td>4. Algoritmo com transformacao dos dados consumidos</td>
+        <td class="ok">ATENDIDO</td>
+        <td>
+          Calculo de <code>scoreRecomendacao</code> com disponibilidade interna, nota externa,
+          volume de avaliacoes, recencia e completude de metadados.
+        </td>
+      </tr>
+      <tr>
+        <td>5. Classes para dados brutos e resposta consolidada</td>
+        <td class="ok">ATENDIDO</td>
+        <td>
+          DTOs em <code>dto.external.google</code>, <code>dto.external.openlibrary</code> e
+          <code>dto.response</code>.
+        </td>
+      </tr>
+      <tr>
+        <td>6. Criacao de endpoint consumivel</td>
+        <td class="ok">ATENDIDO</td>
+        <td>
+          Endpoint: <code>GET /api/v1/livros/enriquecidos?query={termo}&amp;max={1..20}</code>.
+        </td>
+      </tr>
+      <tr>
+        <td>7. Consumo pelo projeto da 1a disciplina</td>
+        <td class="ok">ATENDIDO</td>
+        <td>
+          Contrato pronto e documentado no <code>README.md</code> com instrucoes de consumo
+          pelo projeto da 1a disciplina.
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>3) Confirmacao de testes</h2>
+  <p>
+    Suite de testes da Feature 2 validada via Surefire:
+    <code>LivrosIntegracaoServiceTest - tests="4" errors="0" failures="0" skipped="0"</code>.
+  </p>
+
+  <h3>Cenarios cobertos</h3>
+  <ol>
+    <li>Consolidacao de dados externos com disponibilidade interna e score.</li>
+    <li>Fallback quando Open Library falha.</li>
+    <li>Ordenacao por score e limite de retorno.</li>
+    <li>Validacao de query invalida.</li>
+  </ol>
+
+  <h2>4) Trechos de codigo (evidencias)</h2>
+
+  <h3>4.1 Clients Feign (consumo externo)</h3>
+  <pre style="background:#020b22;color:#f8fafc;border:1px solid #0f172a;padding:6px;border-radius:2px;"><code style="color:#f8fafc;">@FeignClient(name = "googleBooksClient", url = "${app.integracoes.google-books.base-url}")
+public interface GoogleBooksClient {
+    @GetMapping("/volumes")
+    GoogleBooksVolumesResponse buscarVolumes(...);
+}
+
+@FeignClient(name = "openLibraryClient", url = "${app.integracoes.open-library.base-url}")
+public interface OpenLibraryClient {
+    @GetMapping("/search.json")
+    OpenLibrarySearchResponse buscarLivros(...);
+}</code></pre>
+
+  <h3>4.2 Service com orquestracao e algoritmo</h3>
+  <pre style="background:#020b22;color:#f8fafc;border:1px solid #0f172a;padding:6px;border-radius:2px;"><code style="color:#f8fafc;">public LivrosEnriquecidosResponse buscarLivrosEnriquecidos(String query, Integer max) {
+    GoogleBooksVolumesResponse volumesResponse = googleBooksClient.buscarVolumes(...);
+    Map&lt;String, OpenLibraryDoc&gt; openLibraryPorIsbn = buscarOpenLibraryPorIsbn(...);
+
+    List&lt;LivroEnriquecidoResponse&gt; resultados = volumes.stream()
+        .map(volume -&gt; montarRespostaEnriquecida(volume, openLibraryPorIsbn))
+        .sorted(Comparator.comparing(LivroEnriquecidoResponse::scoreRecomendacao).reversed())
+        .limit(limite)
+        .toList();
+
+    return new LivrosEnriquecidosResponse(termo, resultados.size(), resultados);
+}
+
+private int calcularScore(...) {
+    // disponibilidade interna, nota, avaliacoes, recencia e metadados
+}</code></pre>
+
+  <h3>4.3 Controller com endpoint consumivel</h3>
+  <pre style="background:#020b22;color:#f8fafc;border:1px solid #0f172a;padding:6px;border-radius:2px;"><code style="color:#f8fafc;">@RestController
+@RequestMapping("/api/v1/livros")
+public class LivrosIntegracaoController {
+
+    @GetMapping("/enriquecidos")
+    public LivrosEnriquecidosResponse buscarLivrosEnriquecidos(
+            @RequestParam("query") @NotBlank String query,
+            @RequestParam(value = "max", defaultValue = "10") @Min(1) @Max(20) Integer max
+    ) { ... }
+}</code></pre>
+
+  <div class="pagebreak"></div>
+
+  <h3>4.4 Testes unitarios da Feature 2</h3>
+  <pre style="background:#020b22;color:#f8fafc;border:1px solid #0f172a;padding:6px;border-radius:2px;"><code style="color:#f8fafc;">@DisplayName("Deve consolidar dados externos com disponibilidade interna e calcular score")
+@DisplayName("Deve continuar retornando resultados quando Open Library estiver indisponível")
+@DisplayName("Deve limitar quantidade de retorno e ordenar por score de recomendação")
+@DisplayName("Deve lançar erro quando query estiver em branco")</code></pre>
+
+  <h2>5) Evidencias de configuracao</h2>
+  <ul>
+    <li><code>@EnableFeignClients</code> na classe principal da aplicacao.</li>
+    <li>Configuracoes em <code>application.yml</code> para base URL do Google Books e Open Library.</li>
+    <li><code>GOOGLE_BOOKS_API_KEY</code> opcional por variavel de ambiente.</li>
+  </ul>
+
+  <h2>6) Como demonstrar na apresentacao</h2>
+  <ol>
+    <li>Executar API: <code>./mvnw spring-boot:run</code>.</li>
+    <li>Chamar endpoint: <code>GET /api/v1/livros/enriquecidos?query=clean%20architecture&amp;max=5</code>.</li>
+    <li>Mostrar retorno com campos consolidados e <code>scoreRecomendacao</code>.</li>
+    <li>Mostrar no README o contrato para consumo pelo projeto da 1a disciplina.</li>
+  </ol>
+
+  <h2>7) Conclusao</h2>
+  <p>
+    A Feature 2 foi implementada em conformidade com os requisitos tecnicos do PDF,
+    com integracao externa real, orquestracao em servico, endpoint REST consumivel,
+    algoritmo de valor agregado e testes unitarios verdes.
+  </p>
+</body>
+</html>

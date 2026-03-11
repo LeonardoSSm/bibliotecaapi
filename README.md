@@ -79,3 +79,70 @@ H2 Console:
 - JDBC URL: `jdbc:h2:mem:biblioteca_db`
 - User: `sa`
 - Password: (vazio)
+
+## Feature 2 - Integracao e orquestracao com APIs externas
+
+### API externa escolhida e justificativa
+- `Google Books API`: fonte principal de metadados de livros (titulo, autores, categorias, nota e volume de avaliacoes).
+- `Open Library API`: fonte complementar para enriquecer dados quando necessario.
+
+Essa escolha e aderente ao dominio de biblioteca e atende ao requisito da Feature 2 de consumir APIs externas relevantes.
+
+### Arquitetura aplicada (camadas)
+- `client` (OpenFeign): consumo de APIs externas.
+- `service`: orquestracao dos dados externos + dados internos + algoritmo de score.
+- `controller`: exposicao do endpoint REST consumivel por outros sistemas.
+- `dto.external`: mapeamento das respostas brutas das APIs externas.
+- `dto.response`: contrato consolidado retornado pelo endpoint.
+
+### Endpoint criado
+- `GET /api/v1/livros/enriquecidos?query={termo}&max={1..20}`
+
+Exemplo:
+```bash
+curl \"http://localhost:8080/api/v1/livros/enriquecidos?query=clean%20architecture&max=5\"
+```
+
+### Algoritmo implementado (além de pass-through)
+Cada livro recebe `scoreRecomendacao` (0-100), considerando:
+- disponibilidade interna (peso alto),
+- nota externa,
+- volume de avaliacoes,
+- recencia de publicacao,
+- completude de metadados.
+
+Com isso, a API nao apenas repassa dados externos: ela transforma e prioriza resultados para consumo inteligente.
+
+### Principais classes da Feature 2
+- `integracao.livros.client.GoogleBooksClient`
+- `integracao.livros.client.OpenLibraryClient`
+- `integracao.livros.service.LivrosIntegracaoService`
+- `integracao.livros.controller.LivrosIntegracaoController`
+- `integracao.livros.dto.external.google.*`
+- `integracao.livros.dto.external.openlibrary.*`
+- `integracao.livros.dto.response.*`
+
+### Configuracao
+No `application.yml`:
+- `app.integracoes.google-books.base-url`
+- `app.integracoes.google-books.api-key` (via `GOOGLE_BOOKS_API_KEY`, opcional)
+- `app.integracoes.open-library.base-url`
+
+### Testes da Feature 2
+Testes unitarios do servico:
+- consolidacao de dados externos + internos e calculo de score;
+- fallback quando Open Library falha;
+- ordenacao por score e limite de retorno;
+- validacao de query invalida.
+
+Arquivo:
+- `src/test/java/br/com/leonardodasilvasousa/biblioteca_api/integracao/livros/service/LivrosIntegracaoServiceTest.java`
+
+### Consumo pelo projeto da 1a disciplina (requisito 7)
+No projeto da primeira disciplina, crie um client HTTP para consumir:
+- `GET http://<host-da-biblioteca-api>:8080/api/v1/livros/enriquecidos?query={termo}&max={n}`
+
+Exemplo de uso esperado no projeto consumidor:
+- chamar o endpoint para obter lista consolidada,
+- exibir `titulo`, `quantidadeDisponivelInterna` e `scoreRecomendacao`,
+- usar o score para ordenar recomendacoes na interface.

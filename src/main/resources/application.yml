@@ -17,3 +17,11 @@ spring:
     console:
       enabled: true
       path: /h2-console
+
+app:
+  integracoes:
+    google-books:
+      base-url: https://www.googleapis.com/books/v1
+      api-key: ${GOOGLE_BOOKS_API_KEY:}
+    open-library:
+      base-url: https://openlibrary.org
