@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Conformidade Feature 3 - Modularizacao e DTOs</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 18px; color: #111827; line-height: 1.25; font-size: 10px; }
+    h1, h2, h3 { margin: 8px 0 6px; color: #0f172a; }
+    h1 { font-size: 15px; border-bottom: 1px solid #334155; padding-bottom: 4px; }
+    h2 { font-size: 12px; }
+    h3 { font-size: 10.5px; }
+    p { margin: 4px 0; }
+    .meta { background: #f8fafc; border: 1px solid #cbd5e1; padding: 6px 8px; margin-bottom: 8px; }
+    .ok { color: #166534; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 6px 0 10px; }
+    th, td { border: 1px solid #cbd5e1; padding: 4px 5px; vertical-align: top; }
+    th { background: #e2e8f0; }
+    pre { background: #020b22; color: #f8fafc; border: 1px solid #0f172a; padding: 6px; border-radius: 2px; overflow-x: auto; font-size: 9px; line-height: 1.25; margin: 5px 0; }
+    code { font-family: Consolas, "Courier New", monospace; color: inherit; }
+    ol, ul { margin: 4px 0 6px 18px; padding: 0; }
+    li { margin: 1px 0; }
+    .pagebreak { page-break-before: always; }
+  </style>
+</head>
+<body>
+  <h1>Relatorio de Conformidade - Feature 3 (Modularizacao e DTOs)</h1>
+
+  <div class="meta">
+    <p><strong>Projeto:</strong> Biblioteca Universitaria API | <strong>Repo:</strong> git@github.com:LeonardoSSm/bibliotecaapi.git</p>
+    <p><strong>Commit:</strong> eabe069 | <strong>Data:</strong> 11/03/2026 | <strong>Base:</strong> PDF oficial da Feature 3</p>
+    <p><strong>Opcao escolhida:</strong> Opcao 1 (Refatoracao do projeto existente para multi-modulos)</p>
+  </div>
+
+  <h2>1) Resumo da entrega</h2>
+  <p>
+    O projeto foi refatorado para arquitetura multi-modulos com separacao clara de responsabilidades,
+    aplicacao de Request/Response DTOs na API principal e orquestracao de dados internos + externos
+    para respostas orientadas ao cliente.
+  </p>
+
+  <h2>2) Checklist dos requisitos da Feature 3</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Requisito do PDF</th>
+        <th>Status</th>
+        <th>Evidencia objetiva</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1. Estrutura multi-modulos (common-domain, external-api-client, main-application)</td>
+        <td class="ok">ATENDIDO</td>
+        <td>
+          Modulos Maven criados no projeto raiz com responsabilidades separadas e dependencias entre modulos.
+        </td>
+      </tr>
+      <tr>
+        <td>2. Aplicacao de DTOs (Request em POST/PUT e Response em GET/POST/PUT)</td>
+        <td class="ok">ATENDIDO</td>
+        <td>
+          <code>LivroRequestDTO</code> usado em <code>POST/PUT /api/v1/livros</code> e
+          <code>LivroResponseDTO</code> retornado em <code>GET/POST/PUT</code>.
+        </td>
+      </tr>
+      <tr>
+        <td>3. Encapsulamento do dominio (sem validacoes HTTP em entidades)</td>
+        <td class="ok">ATENDIDO</td>
+        <td>
+          Entidades do modulo <code>common-domain</code> usam anotacoes JPA, sem
+          <code>@NotBlank</code>, <code>@Email</code> etc.
+        </td>
+      </tr>
+      <tr>
+        <td>4. Orquestracao de dados internos e externos para Response DTO</td>
+        <td class="ok">ATENDIDO</td>
+        <td>
+          <code>LivrosIntegracaoService</code> combina Google Books + Open Library + dados internos
+          para gerar <code>LivrosEnriquecidosResponse</code>.
+        </td>
+      </tr>
+      <tr>
+        <td>5. README com explicacao da arquitetura, DTOs e mapeamentos</td>
+        <td class="ok">ATENDIDO</td>
+        <td>
+          <code>README.md</code> atualizado com responsabilidades dos modulos,
+          uso de DTOs e fluxo de mapeamento/orquestracao.
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>3) Evidencia da estrutura multi-modulos</h2>
+  <pre style="background:#020b22;color:#f8fafc;border:1px solid #0f172a;padding:6px;border-radius:2px;"><code style="color:#f8fafc;">biblioteca-api/
+  pom.xml (packaging pom)
+  common-domain/
+    src/main/java/.../livro/model/Livro.java
+    src/main/java/.../leitor/model/Leitor.java
+    src/main/java/.../reserva/model/Reserva.java
+    src/main/java/.../reserva/model/ReservaStatus.java
+  external-api-client/
+    src/main/java/.../integracao/livros/client/GoogleBooksClient.java
+    src/main/java/.../integracao/livros/client/OpenLibraryClient.java
+    src/main/java/.../integracao/livros/dto/external/...
+  main-application/
+    src/main/java/.../controller
+    src/main/java/.../service
+    src/main/java/.../repository
+    src/main/java/.../dto/request
+    src/main/java/.../dto/response</code></pre>
+
+  <h2>4) Trechos de codigo (DTOs e mapeamento)</h2>
+
+  <h3>4.1 Request DTO com validacao</h3>
+  <pre style="background:#020b22;color:#f8fafc;border:1px solid #0f172a;padding:6px;border-radius:2px;"><code style="color:#f8fafc;">public record LivroRequestDTO(
+    @NotBlank @Size(max = 255) String titulo,
+    @NotBlank @Size(max = 255) String autor,
+    @NotBlank @Size(min = 10, max = 17) String isbn,
+    @NotBlank @Size(max = 255) String categoria,
+    @Min(1) Integer quantidadeTotal,
+    @Min(0) Integer quantidadeDisponivel
+) { }</code></pre>
+
+  <h3>4.2 Controller usando Request/Response DTOs</h3>
+  <pre style="background:#020b22;color:#f8fafc;border:1px solid #0f172a;padding:6px;border-radius:2px;"><code style="color:#f8fafc;">@PostMapping
+@ResponseStatus(HttpStatus.CREATED)
+public LivroResponseDTO criarLivro(@Valid @RequestBody LivroRequestDTO requestDTO) {
+    return livroApplicationService.criarLivro(requestDTO);
+}
+
+@PutMapping("/{id}")
+public LivroResponseDTO atualizarLivro(@PathVariable Long id,
+                                       @Valid @RequestBody LivroRequestDTO requestDTO) {
+    return livroApplicationService.atualizarLivro(id, requestDTO);
+}</code></pre>
+
+  <h3>4.3 Service mapeando DTO -> dominio -> DTO</h3>
+  <pre style="background:#020b22;color:#f8fafc;border:1px solid #0f172a;padding:6px;border-radius:2px;"><code style="color:#f8fafc;">public LivroResponseDTO criarLivro(LivroRequestDTO requestDTO) {
+    validarQuantidades(requestDTO.quantidadeTotal(), requestDTO.quantidadeDisponivel());
+
+    Livro livro = new Livro(
+        null,
+        requestDTO.titulo(),
+        requestDTO.autor(),
+        requestDTO.isbn(),
+        requestDTO.categoria(),
+        requestDTO.quantidadeTotal(),
+        requestDTO.quantidadeDisponivel()
+    );
+
+    return mapearParaResponse(livroRepository.save(livro));
+}</code></pre>
+
+  <div class="pagebreak"></div>
+
+  <h2>5) Encapsulamento do dominio (common-domain)</h2>
+  <p>
+    As entidades de dominio foram movidas para <code>common-domain</code> e nao carregam validacoes HTTP.
+  </p>
+  <pre style="background:#020b22;color:#f8fafc;border:1px solid #0f172a;padding:6px;border-radius:2px;"><code style="color:#f8fafc;">@Entity
+@Table(name = "livros")
+public class Livro {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private String titulo;
+
+    @Column(nullable = false)
+    private String autor;
+
+    // ...demais campos de dominio e regras de negocio internas
+}</code></pre>
+
+  <h2>6) Orquestracao de dados para Response DTO orientado ao cliente</h2>
+  <pre style="background:#020b22;color:#f8fafc;border:1px solid #0f172a;padding:6px;border-radius:2px;"><code style="color:#f8fafc;">public LivrosEnriquecidosResponse buscarLivrosEnriquecidos(String query, Integer max) {
+    GoogleBooksVolumesResponse volumesResponse = googleBooksClient.buscarVolumes(...);
+    Map&lt;String, OpenLibraryDoc&gt; openLibraryPorIsbn = buscarOpenLibraryPorIsbn(...);
+
+    List&lt;LivroEnriquecidoResponse&gt; resultados = volumes.stream()
+        .map(volume -&gt; montarRespostaEnriquecida(volume, openLibraryPorIsbn))
+        .sorted(Comparator.comparing(LivroEnriquecidoResponse::scoreRecomendacao).reversed())
+        .limit(limite)
+        .toList();
+
+    return new LivrosEnriquecidosResponse(termo, resultados.size(), resultados);
+}</code></pre>
+
+  <h2>7) Confirmacao de testes em GREEN</h2>
+  <p>
+    Resultado da suite no modulo principal: <code>tests="14" errors="0" failures="0" skipped="0"</code>
+    (BibliotecaApiApplicationTests, ReservaServiceTest, LivrosIntegracaoServiceTest, LivroApplicationServiceTest).
+  </p>
+  <pre style="background:#020b22;color:#f8fafc;border:1px solid #0f172a;padding:6px;border-radius:2px;"><code style="color:#f8fafc;">TEST-...ReservaServiceTest.xml: tests="5" errors="0" failures="0"
+TEST-...LivrosIntegracaoServiceTest.xml: tests="4" errors="0" failures="0"
+TEST-...LivroApplicationServiceTest.xml: tests="4" errors="0" failures="0"
+TEST-...BibliotecaApiApplicationTests.xml: tests="1" errors="0" failures="0"</code></pre>
+
+  <h2>8) Conclusao</h2>
+  <p>
+    A Feature 3 foi concluida com aderencia aos requisitos do PDF: arquitetura multi-modulos,
+    uso correto de DTOs para entrada/saida, dominio encapsulado e orquestracao de dados para respostas
+    mais uteis ao cliente da API.
+  </p>
+</body>
+</html>
