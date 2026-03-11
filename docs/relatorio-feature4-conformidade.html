@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Conformidade Feature 4 - Spring Security</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 18px; color: #111827; line-height: 1.25; font-size: 10px; }
+    h1, h2, h3 { margin: 8px 0 6px; color: #0f172a; }
+    h1 { font-size: 15px; border-bottom: 1px solid #334155; padding-bottom: 4px; }
+    h2 { font-size: 12px; }
+    h3 { font-size: 10.5px; }
+    p { margin: 4px 0; }
+    .meta { background: #f8fafc; border: 1px solid #cbd5e1; padding: 6px 8px; margin-bottom: 8px; }
+    .ok { color: #166534; font-weight: bold; }
+    table { border-collapse: collapse; width: 100%; margin: 6px 0 10px; }
+    th, td { border: 1px solid #cbd5e1; padding: 4px 5px; vertical-align: top; }
+    th { background: #e2e8f0; }
+    pre { background: #020b22; color: #f8fafc; border: 1px solid #0f172a; padding: 6px; border-radius: 2px; overflow-x: auto; font-size: 9px; line-height: 1.25; margin: 5px 0; }
+    code { font-family: Consolas, "Courier New", monospace; color: inherit; }
+    ol, ul { margin: 4px 0 6px 18px; padding: 0; }
+    li { margin: 1px 0; }
+    .pagebreak { page-break-before: always; }
+  </style>
+</head>
+<body>
+  <h1>Relatorio de Conformidade - Feature 4 (Autenticacao e Autorizacao)</h1>
+
+  <div class="meta">
+    <p><strong>Projeto:</strong> Biblioteca Universitaria API | <strong>Repo:</strong> git@github.com:LeonardoSSm/bibliotecaapi.git</p>
+    <p><strong>Commit base:</strong> e7c7ab4 | <strong>Data:</strong> 11/03/2026 | <strong>Base:</strong> PDF oficial da Feature 4</p>
+    <p><strong>Escopo:</strong> HTTP Basic + autorizacao por URL/HttpMethod + seguranca por padrao</p>
+  </div>
+
+  <h2>1) Resumo da entrega</h2>
+  <p>
+    Foi implementada a camada de seguranca com Spring Security para autenticar usuarios via HTTP Basic
+    e autorizar acesso por roles (`ADMIN` e `USER`) em dois contextos distintos de endpoints,
+    seguindo o principio do menor privilegio e o comportamento de falha segura por padrao.
+  </p>
+
+  <h2>2) Checklist dos requisitos da Feature 4</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Requisito do PDF</th>
+        <th>Status</th>
+        <th>Evidencia objetiva</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Configurar Spring Security com autenticacao HTTP Basic</td>
+        <td class="ok">ATENDIDO</td>
+        <td><code>SecurityConfig.securityFilterChain()</code> com <code>httpBasic()</code>.</td>
+      </tr>
+      <tr>
+        <td>Todas as requisicoes exigem autenticacao</td>
+        <td class="ok">ATENDIDO</td>
+        <td><code>anyRequest().authenticated()</code> configurado.</td>
+      </tr>
+      <tr>
+        <td>Usuarios em memoria (ADMIN e USER) com senha codificada</td>
+        <td class="ok">ATENDIDO</td>
+        <td>
+          <code>InMemoryUserDetailsManager</code> com usuarios <code>admin</code> e <code>user</code>,
+          senha codificada por <code>BCryptPasswordEncoder</code>.
+        </td>
+      </tr>
+      <tr>
+        <td>Autorizacao por URL/Request Matching em pelo menos 2 contextos</td>
+        <td class="ok">ATENDIDO</td>
+        <td>
+          Contexto 1: <code>/api/v1/livros/**</code> (GET para USER/ADMIN; escrita somente ADMIN).<br/>
+          Contexto 2: <code>/api/v1/livros/enriquecidos</code> (GET somente ADMIN).
+        </td>
+      </tr>
+      <tr>
+        <td>Uso de HttpMethod nas regras</td>
+        <td class="ok">ATENDIDO</td>
+        <td>
+          Regras com <code>HttpMethod.GET</code>, <code>POST</code>, <code>PUT</code>, <code>PATCH</code>, <code>DELETE</code>.
+        </td>
+      </tr>
+      <tr>
+        <td>Seguranca por padrao (rotas nao mapeadas exigem autenticacao)</td>
+        <td class="ok">ATENDIDO</td>
+        <td>
+          Regra global <code>anyRequest().authenticated()</code> + teste dedicado de 401.
+        </td>
+      </tr>
+      <tr>
+        <td>Documentacao no README e evidencias de testes</td>
+        <td class="ok">ATENDIDO</td>
+        <td>
+          <code>README.md</code> atualizado com usuarios, regras por contexto e cenarios de validacao.
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>3) Trechos de codigo (configuracao de seguranca)</h2>
+
+  <h3>3.1 SecurityFilterChain com autenticacao e autorizacao</h3>
+  <pre style="background:#020b22;color:#f8fafc;border:1px solid #0f172a;padding:6px;border-radius:2px;"><code style="color:#f8fafc;">@Bean
+SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+        .csrf(csrf -&gt; csrf.disable())
+        .authorizeHttpRequests(auth -&gt; auth
+            .requestMatchers(HttpMethod.GET, "/api/v1/livros/enriquecidos/**").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.POST, "/api/v1/livros/**").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.PUT, "/api/v1/livros/**").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.PATCH, "/api/v1/livros/**").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.DELETE, "/api/v1/livros/**").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.GET, "/api/v1/livros/**").hasAnyRole("ADMIN", "USER")
+            .anyRequest().authenticated())
+        .httpBasic(Customizer.withDefaults());
+
+    return http.build();
+}</code></pre>
+
+  <h3>3.2 Usuarios em memoria com senha codificada</h3>
+  <pre style="background:#020b22;color:#f8fafc;border:1px solid #0f172a;padding:6px;border-radius:2px;"><code style="color:#f8fafc;">@Bean
+UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
+    UserDetails admin = User.withUsername("admin")
+        .password(passwordEncoder.encode("admin123"))
+        .roles("ADMIN")
+        .build();
+
+    UserDetails user = User.withUsername("user")
+        .password(passwordEncoder.encode("user123"))
+        .roles("USER")
+        .build();
+
+    return new InMemoryUserDetailsManager(admin, user);
+}
+
+@Bean
+PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+}</code></pre>
+
+  <div class="pagebreak"></div>
+
+  <h2>4) Evidencias de testes de seguranca</h2>
+  <p>
+    Classe de teste: <code>SecurityConfigWebTest</code> com validacao explicita de cenarios de sucesso e falha
+    (401 sem autenticacao, 403 por role inadequada e acessos permitidos por role correta).
+  </p>
+
+  <h3>4.1 Cenarios cobertos</h3>
+  <ol>
+    <li>Sem autenticacao em <code>GET /api/v1/livros</code> retorna <code>401</code>.</li>
+    <li><code>USER</code> em <code>GET /api/v1/livros</code> retorna <code>200</code>.</li>
+    <li><code>USER</code> em <code>POST /api/v1/livros</code> retorna <code>403</code>.</li>
+    <li><code>ADMIN</code> em <code>POST /api/v1/livros</code> retorna <code>201</code>.</li>
+    <li><code>USER</code> em <code>GET /api/v1/livros/enriquecidos</code> retorna <code>403</code>.</li>
+    <li><code>ADMIN</code> em <code>GET /api/v1/livros/enriquecidos</code> retorna <code>200</code>.</li>
+    <li>Sem autenticacao em endpoint nao mapeado retorna <code>401</code> (seguranca por padrao).</li>
+  </ol>
+
+  <h3>4.2 Resultado da suite</h3>
+  <pre style="background:#020b22;color:#f8fafc;border:1px solid #0f172a;padding:6px;border-radius:2px;"><code style="color:#f8fafc;">SecurityConfigWebTest: tests="7" errors="0" failures="0" skipped="0"
+ReservaServiceTest: tests="5" errors="0" failures="0"
+LivrosIntegracaoServiceTest: tests="4" errors="0" failures="0"
+LivroApplicationServiceTest: tests="4" errors="0" failures="0"
+BibliotecaApiApplicationTests: tests="1" errors="0" failures="0"
+TOTAL main-application: tests="21" errors="0" failures="0"</code></pre>
+
+  <h2>5) Principios de seguranca aplicados</h2>
+  <ul>
+    <li><strong>Menor privilegio:</strong> <code>USER</code> so possui leitura de catalogo; escrita e contexto enriquecido ficam com <code>ADMIN</code>.</li>
+    <li><strong>Seguranca por padrao:</strong> rotas nao autorizadas explicitamente continuam protegidas por autenticacao.</li>
+    <li><strong>Falha segura:</strong> ausencia de credencial gera <code>401</code>; credencial sem permissao gera <code>403</code>.</li>
+  </ul>
+
+  <h2>6) Conclusao</h2>
+  <p>
+    A Feature 4 foi implementada com aderencia aos requisitos do PDF, com autenticacao HTTP Basic,
+    autorizacao por roles em dois contextos, regras por HttpMethod, seguranca por padrao e evidencias
+    de testes automatizados em GREEN.
+  </p>
+</body>
+</html>

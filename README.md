@@ -1,6 +1,6 @@
 # Biblioteca Universitaria API
 
-API de biblioteca em Java 21 com Spring Boot, evoluida nas Features 1, 2 e 3.
+API de biblioteca em Java 21 com Spring Boot, evoluida nas Features 1, 2, 3 e 4.
 
 ## Stack
 - Java 21
@@ -92,6 +92,53 @@ No `LivrosIntegracaoService`:
 - consome Google Books e Open Library (modulo `external-api-client`);
 - cruza com disponibilidade interna e reservas ativas;
 - retorna resposta consolidada e otimizada para cliente da API.
+
+## Feature 4 - Autenticacao e autorizacao com Spring Security
+
+### Autenticacao (HTTP Basic)
+- Todas as requisicoes exigem autenticacao.
+- Mecanismo: HTTP Basic.
+- Usuarios em memoria com senha codificada (BCrypt):
+  - `admin` / `admin123` com role `ADMIN`
+  - `user` / `user123` com role `USER`
+
+### Autorizacao por URL/HttpMethod (2 contextos)
+
+Contexto 1 - Catalogo interno (`/api/v1/livros/**`):
+- `GET`: `ADMIN` ou `USER`
+- `POST`, `PUT`, `PATCH`, `DELETE`: apenas `ADMIN`
+
+Contexto 2 - Catalogo enriquecido (`/api/v1/livros/enriquecidos`):
+- `GET`: apenas `ADMIN`
+
+Seguranca por padrao:
+- Qualquer rota fora das regras explicitas permanece com `authenticated()`.
+
+### Evidencias de teste da Feature 4
+Arquivo:
+- `main-application/src/test/java/br/com/leonardodasilvasousa/biblioteca_api/config/SecurityConfigWebTest.java`
+
+Cenarios validados:
+1. `401 Unauthorized` sem credenciais
+2. `200 OK` para `USER` em leitura de catalogo (`GET /api/v1/livros`)
+3. `403 Forbidden` para `USER` em criacao (`POST /api/v1/livros`)
+4. `201 Created` para `ADMIN` em criacao (`POST /api/v1/livros`)
+5. `403 Forbidden` para `USER` no contexto enriquecido
+6. `200 OK` para `ADMIN` no contexto enriquecido
+7. `401 Unauthorized` em endpoint nao mapeado sem autenticacao
+
+### Exemplo rapido com curl
+Leitura com USER:
+```bash
+curl -u user:user123 http://localhost:8080/api/v1/livros
+```
+
+Criacao com ADMIN:
+```bash
+curl -u admin:admin123 -X POST http://localhost:8080/api/v1/livros \
+  -H "Content-Type: application/json" \
+  -d '{"titulo":"Clean Architecture","autor":"Robert C. Martin","isbn":"9780134494166","categoria":"Arquitetura","quantidadeTotal":10,"quantidadeDisponivel":10}'
+```
 
 ## Endpoints principais
 - `GET /api/v1/livros`
