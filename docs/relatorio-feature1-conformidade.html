@@ -2,171 +2,112 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <title>Relatorio de Conformidade - Feature 1 (TDD)</title>
+  <title>Conformidade Feature 1 - TDD</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 28px; color: #1f2937; line-height: 1.45; }
-    h1, h2, h3 { color: #0f172a; }
-    h1 { border-bottom: 2px solid #0f172a; padding-bottom: 8px; }
-    .meta { background: #f8fafc; border: 1px solid #cbd5e1; padding: 10px 12px; margin-bottom: 18px; }
+    body { font-family: Arial, sans-serif; margin: 18px; color: #111827; line-height: 1.25; font-size: 10px; }
+    h1, h2, h3 { margin: 8px 0 6px; color: #0f172a; }
+    h1 { font-size: 15px; border-bottom: 1px solid #334155; padding-bottom: 4px; }
+    h2 { font-size: 12px; }
+    h3 { font-size: 10.5px; }
+    p { margin: 4px 0; }
+    .meta { background: #f8fafc; border: 1px solid #cbd5e1; padding: 6px 8px; margin-bottom: 8px; }
     .ok { color: #166534; font-weight: bold; }
-    .warn { color: #92400e; font-weight: bold; }
-    table { border-collapse: collapse; width: 100%; margin: 12px 0 20px 0; }
-    th, td { border: 1px solid #cbd5e1; padding: 8px; vertical-align: top; }
-    th { background: #e2e8f0; text-align: left; }
-    pre { background: #0b1020; color: #e5e7eb; padding: 10px; border-radius: 6px; overflow-x: auto; font-size: 12px; }
+    table { border-collapse: collapse; width: 100%; margin: 6px 0 10px; }
+    th, td { border: 1px solid #cbd5e1; padding: 4px 5px; vertical-align: top; }
+    th { background: #e2e8f0; }
+    pre { background: #0b1020; color: #e5e7eb; padding: 6px; border-radius: 4px; overflow-x: auto; font-size: 8.6px; line-height: 1.2; margin: 5px 0; }
     code { font-family: Consolas, "Courier New", monospace; }
-    ul { margin-top: 4px; }
-    .pagebreak { page-break-before: always; }
+    ol, ul { margin: 4px 0 6px 18px; padding: 0; }
+    li { margin: 1px 0; }
   </style>
 </head>
 <body>
-  <h1>Relatorio de Conformidade - Feature 1 (Desafio TDD)</h1>
+  <h1>Relatorio de Conformidade - Feature 1 (TDD)</h1>
 
   <div class="meta">
-    <p><strong>Projeto:</strong> Biblioteca Universitaria API</p>
-    <p><strong>Repositorio:</strong> git@github.com:LeonardoSSm/bibliotecaapi.git</p>
-    <p><strong>Commit validado:</strong> a2420d3</p>
-    <p><strong>Data da validacao:</strong> 11/03/2026</p>
-    <p><strong>Fonte dos requisitos:</strong> Feature 1 - Arquiteturas Avancadas de Software com Microsservicos e Spring Framework (2).pdf</p>
+    <p><strong>Projeto:</strong> Biblioteca Universitaria API | <strong>Repo:</strong> git@github.com:LeonardoSSm/bibliotecaapi.git</p>
+    <p><strong>Commit:</strong> c73e8cf | <strong>Data:</strong> 11/03/2026 | <strong>Base:</strong> PDF oficial da Feature 1</p>
   </div>
 
-  <h2>1. Funcionalidade implementada</h2>
-  <p>
-    Foi implementado o <strong>Modulo de Reserva de Livros</strong>, integrando as entidades <code>Livro</code>, <code>Leitor</code> e
-    <code>Reserva</code>, com regras de negocio para criacao/cancelamento de reserva, controle de estoque disponivel e tratamento de erros.
-  </p>
+  <h2>1) Resumo da entrega</h2>
+  <p>Funcionalidade: modulo de reserva de livros com TDD, cobrindo criacao/cancelamento de reserva, controle de estoque, duplicidade e erros de negocio.</p>
 
-  <h2>2. Checklist de requisitos oficiais (Feature 1)</h2>
+  <h2>2) Checklist de requisitos (Feature 1)</h2>
   <table>
     <thead>
       <tr>
-        <th>Requisito da Feature 1</th>
+        <th>Requisito</th>
         <th>Status</th>
-        <th>Evidencia objetiva</th>
+        <th>Evidencia</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td>Framework de teste: JUnit 5 (JUnit Jupiter)</td>
+        <td>JUnit 5</td>
         <td class="ok">ATENDIDO</td>
-        <td>
-          Testes com <code>@Test</code> e <code>@DisplayName</code> em
-          <code>src/test/java/.../ReservaServiceTest.java</code>.
-        </td>
+        <td><code>ReservaServiceTest.java</code> com <code>@Test</code> e <code>@DisplayName</code>.</td>
       </tr>
       <tr>
-        <td>Novos testes na mesma estrutura de pacotes</td>
+        <td>Estrutura de pacotes de teste correspondente</td>
         <td class="ok">ATENDIDO</td>
-        <td>
-          Servico em <code>src/main/java/.../reserva/service/ReservaService.java</code><br/>
-          Teste correspondente em <code>src/test/java/.../reserva/service/ReservaServiceTest.java</code>.
-        </td>
+        <td><code>.../reserva/service/ReservaService.java</code> e <code>.../reserva/service/ReservaServiceTest.java</code>.</td>
       </tr>
       <tr>
-        <td>Todos os testes da nova funcionalidade em GREEN</td>
+        <td>Testes da nova funcionalidade em GREEN</td>
         <td class="ok">ATENDIDO</td>
-        <td>
-          Relatorio Surefire: <code>tests="5" errors="0" failures="0" skipped="0"</code>
-          no arquivo <code>target/surefire-reports/TEST-br.com...ReservaServiceTest.xml</code>.
-        </td>
+        <td>Surefire: <code>tests="5" errors="0" failures="0" skipped="0"</code>.</td>
       </tr>
       <tr>
-        <td>Criar nova classe de modelo e nova classe de servico</td>
+        <td>Pelo menos 1 classe de modelo + 1 classe de servico</td>
         <td class="ok">ATENDIDO</td>
-        <td>
-          Modelo: <code>Reserva</code>, <code>ReservaStatus</code> (alem de <code>Livro</code> e <code>Leitor</code>).<br/>
-          Servico: <code>ReservaService</code>.
-        </td>
+        <td>Modelos: <code>Reserva</code>, <code>ReservaStatus</code>; Servico: <code>ReservaService</code>.</td>
       </tr>
       <tr>
-        <td>Aplicar ciclo Red-Green-Refactor</td>
+        <td>Ciclo Red-Green-Refactor</td>
         <td class="ok">ATENDIDO</td>
-        <td>
-          RED registrado com falha de compilacao inicial por classes inexistentes;<br/>
-          GREEN com testes passando;<br/>
-          REFACTOR com extracao de metodos privados em <code>ReservaService</code>.
-        </td>
+        <td>RED (falha inicial), GREEN (passou), REFACTOR (extracao de metodos privados).</td>
       </tr>
       <tr>
-        <td>README com funcionalidade, integracao, classes e 3 a 5 cenarios</td>
+        <td>README com descricao + 3 a 5 cenarios</td>
         <td class="ok">ATENDIDO</td>
-        <td>
-          Arquivo <code>README.md</code> inclui todos os itens pedidos e 5 cenarios com DisplayName + objetivo.
-        </td>
+        <td><code>README.md</code> com funcionalidade, integracao, classes e 5 cenarios.</td>
       </tr>
       <tr>
-        <td>Codigo-fonte no GitHub</td>
+        <td>Codigo no GitHub</td>
         <td class="ok">ATENDIDO</td>
-        <td>
-          Repositorio configurado e publicado em <code>origin/main</code>.
-        </td>
+        <td>Repositorio publicado em <code>origin/main</code>.</td>
       </tr>
     </tbody>
   </table>
 
-  <h2>3. Evidencias do TDD (Red-Green-Refactor)</h2>
-
-  <h3>3.1 RED - teste criado antes do codigo de implementacao</h3>
-  <p>
-    O primeiro passo foi criar <code>ReservaServiceTest</code>. Na execucao inicial, houve falha de compilacao,
-    pois as classes de dominio/servico ainda nao existiam.
-  </p>
-  <pre><code>[ERROR] package br.com.leonardodasilvasousa.biblioteca_api.reserva.model does not exist
-[ERROR] package br.com.leonardodasilvasousa.biblioteca_api.reserva.repository does not exist
+  <h2>3) Evidencia do TDD</h2>
+  <h3>RED</h3>
+  <pre><code>[ERROR] package br.com...reserva.model does not exist
+[ERROR] package br.com...reserva.repository does not exist
 [ERROR] cannot find symbol class ReservaService</code></pre>
 
-  <h3>3.2 GREEN - implementacao minima para passar</h3>
-  <p>
-    Foram implementados os artefatos minimos (<code>Reserva</code>, <code>ReservaService</code>, repositorios, excecoes e metodos de estoque) e os testes passaram.
-  </p>
-  <pre><code>&lt;testsuite ... name="br.com...ReservaServiceTest" tests="5" errors="0" skipped="0" failures="0"&gt;</code></pre>
+  <h3>GREEN</h3>
+  <pre><code>&lt;testsuite name="br.com...ReservaServiceTest" tests="5" errors="0" failures="0" skipped="0" /&gt;</code></pre>
 
-  <h3>3.3 REFACTOR - melhoria de legibilidade sem quebrar testes</h3>
-  <p>
-    O servico foi refatorado com extracao de metodos privados de busca e validacao:
-    <code>buscarLivroPorId</code>, <code>buscarLeitorPorId</code>, <code>validarReservaDuplicada</code>, <code>validarLivroDisponivel</code>.
-  </p>
+  <h3>REFACTOR</h3>
+  <p>Servico reorganizado com: <code>buscarLivroPorId</code>, <code>buscarLeitorPorId</code>, <code>validarReservaDuplicada</code>, <code>validarLivroDisponivel</code>.</p>
 
-  <div class="pagebreak"></div>
-
-  <h2>4. Trechos de codigo (evidencia tecnica)</h2>
-
-  <h3>4.1 Testes unitarios com DisplayName (sucesso + erro)</h3>
-  <pre><code>@Test
-@DisplayName("Deve criar reserva ativa com prazo padrão e reduzir quantidade disponível do livro")
-void deveCriarReservaAtivaQuandoLivroDisponivel() {
-    // Arrange + Act + Assert
-}
-
-@Test
+  <h2>4) Trechos de codigo (TDD + regras)</h2>
+  <h3>Testes (cenarios principais)</h3>
+  <pre><code>@DisplayName("Deve criar reserva ativa com prazo padrão e reduzir quantidade disponível do livro")
 @DisplayName("Deve lançar erro ao reservar livro sem quantidade disponível")
-void deveLancarErroQuandoLivroIndisponivel() {
-    assertThrows(LivroIndisponivelException.class, () -> reservaService.criarReserva(livroId, leitorId));
-}
-
-@Test
 @DisplayName("Deve lançar erro ao tentar criar reserva ativa duplicada para o mesmo livro e leitor")
-void deveLancarErroQuandoReservaDuplicada() { ... }
-
-@Test
 @DisplayName("Deve cancelar reserva ativa e devolver uma unidade para quantidade disponível")
-void deveCancelarReservaAtivaComSucesso() { ... }
+@DisplayName("Deve lançar erro ao cancelar uma reserva inexistente")</code></pre>
 
-@Test
-@DisplayName("Deve lançar erro ao cancelar uma reserva inexistente")
-void deveLancarErroQuandoReservaNaoEncontradaNoCancelamento() { ... }</code></pre>
-
-  <h3>4.2 Regras de negocio no servico</h3>
+  <h3>Servico de negocio</h3>
   <pre><code>public Reserva criarReserva(Long livroId, Long leitorId) {
     Livro livro = buscarLivroPorId(livroId);
     Leitor leitor = buscarLeitorPorId(leitorId);
-
     validarReservaDuplicada(livroId, leitorId);
     validarLivroDisponivel(livro, livroId);
-
     livro.reduzirQuantidadeDisponivel();
     livroRepository.save(livro);
-
     Reserva reserva = Reserva.criarAtiva(livro, leitor, LocalDate.now(), PRAZO_PADRAO_RESERVA_DIAS);
     return reservaRepository.save(reserva);
 }
@@ -174,74 +115,32 @@ void deveLancarErroQuandoReservaNaoEncontradaNoCancelamento() { ... }</code></pr
 public Reserva cancelarReserva(Long reservaId) {
     Reserva reserva = reservaRepository.findById(reservaId)
         .orElseThrow(() -> new ReservaNaoEncontradaException(reservaId));
-
     if (ReservaStatus.ATIVA.equals(reserva.getStatus())) {
         reserva.cancelar();
         Livro livro = reserva.getLivro();
         livro.aumentarQuantidadeDisponivel();
         livroRepository.save(livro);
     }
-
     return reservaRepository.save(reserva);
 }</code></pre>
 
-  <h3>4.3 Modelo e persistencia para suportar as regras</h3>
-  <pre><code>// Reserva.java
-public static Reserva criarAtiva(Livro livro, Leitor leitor, LocalDate dataReserva, int prazoDias) {
-    return new Reserva(null, livro, leitor, dataReserva, ReservaStatus.ATIVA, prazoDias);
-}
-
-public void cancelar() {
-    this.status = ReservaStatus.CANCELADA;
-}
-
-// ReservaRepository.java
+  <h3>Modelo + repositorio</h3>
+  <pre><code>public static Reserva criarAtiva(...) { return new Reserva(..., ReservaStatus.ATIVA, prazoDias); }
+public void cancelar() { this.status = ReservaStatus.CANCELADA; }
 boolean existsByLivroIdAndLeitorIdAndStatus(Long livroId, Long leitorId, ReservaStatus status);
+public void reduzirQuantidadeDisponivel() { ... }
+public void aumentarQuantidadeDisponivel() { ... }</code></pre>
 
-// Livro.java
-public void reduzirQuantidadeDisponivel() {
-    if (quantidadeDisponivel &lt;= 0) throw new IllegalStateException(...);
-    this.quantidadeDisponivel--;
-}
-
-public void aumentarQuantidadeDisponivel() {
-    if (quantidadeDisponivel &lt; quantidadeTotal) this.quantidadeDisponivel++;
-}</code></pre>
-
-  <h2>5. Cenarios de teste (3 a 5) com DisplayName e objetivo</h2>
+  <h2>5) Cenarios (DisplayName + objetivo)</h2>
   <ol>
-    <li><strong>Deve criar reserva ativa com prazo padrao e reduzir quantidade disponivel do livro</strong><br/>
-      Objetivo: validar criacao com status ATIVA, prazo padrao 7 dias e decremento de estoque.</li>
-    <li><strong>Deve lancar erro ao reservar livro sem quantidade disponivel</strong><br/>
-      Objetivo: garantir bloqueio de reserva quando nao ha exemplares disponiveis.</li>
-    <li><strong>Deve lancar erro ao tentar criar reserva ativa duplicada para o mesmo livro e leitor</strong><br/>
-      Objetivo: impedir duplicidade de reserva ativa para o mesmo par livro/leitor.</li>
-    <li><strong>Deve cancelar reserva ativa e devolver uma unidade para quantidade disponivel</strong><br/>
-      Objetivo: validar cancelamento com devolucao da unidade ao estoque.</li>
-    <li><strong>Deve lancar erro ao cancelar uma reserva inexistente</strong><br/>
-      Objetivo: garantir tratamento de erro para reserva nao encontrada.</li>
+    <li>Criar reserva ativa com prazo 7 e reduzir estoque.</li>
+    <li>Bloquear reserva quando livro indisponivel.</li>
+    <li>Bloquear reserva ativa duplicada (mesmo livro/leitor).</li>
+    <li>Cancelar reserva ativa e devolver unidade ao estoque.</li>
+    <li>Retornar erro para reserva nao encontrada.</li>
   </ol>
 
-  <h2>6. Arquivos principais da Feature 1</h2>
-  <ul>
-    <li><code>src/main/java/.../reserva/service/ReservaService.java</code></li>
-    <li><code>src/main/java/.../reserva/model/Reserva.java</code></li>
-    <li><code>src/main/java/.../reserva/model/ReservaStatus.java</code></li>
-    <li><code>src/main/java/.../reserva/repository/ReservaRepository.java</code></li>
-    <li><code>src/main/java/.../reserva/exception/*.java</code></li>
-    <li><code>src/main/java/.../livro/model/Livro.java</code></li>
-    <li><code>src/main/java/.../leitor/model/Leitor.java</code></li>
-    <li><code>src/test/java/.../reserva/service/ReservaServiceTest.java</code></li>
-    <li><code>README.md</code></li>
-  </ul>
-
-  <h2>7. Conclusao</h2>
-  <p>
-    A Feature 1 foi entregue em conformidade com os requisitos tecnicos e de documentacao:
-    TDD aplicado, testes unitarios em estrutura correta, cenarios de sucesso/erro cobertos,
-    testes em estado GREEN e documentacao no README.
-  </p>
-
-  <p><strong>Observacao tecnica:</strong> o projeto atual esta com Spring Boot 4.0.3 no <code>pom.xml</code>.</p>
+  <h2>6) Conclusao</h2>
+  <p>Entrega da Feature 1 validada com aderencia ao TDD, cobertura de sucesso/erro, testes verdes e documentacao no README.</p>
 </body>
 </html>
