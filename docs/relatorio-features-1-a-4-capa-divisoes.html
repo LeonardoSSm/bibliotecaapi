@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Relatório Consolidado - Features 1 a 4</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 28px; color: #0f172a; line-height: 1.35; font-size: 11px; }
+    h1, h2, h3 { margin: 8px 0; }
+    h1 { font-size: 24px; margin-top: 32px; }
+    h2 { font-size: 16px; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px; }
+    h3 { font-size: 14px; }
+    p { margin: 5px 0; }
+    ul { margin: 6px 0 8px 18px; }
+    .meta { margin-top: 18px; background: #f8fafc; border: 1px solid #cbd5e1; padding: 10px; }
+    .repo { word-break: break-all; }
+    .pagebreak { page-break-before: always; }
+    .center { text-align: center; }
+    .feature-box { border: 1px solid #cbd5e1; background: #f8fafc; padding: 10px; margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <div class="center">
+    <h1>Biblioteca Universitária API</h1>
+    <h2 style="border-bottom: none;">Relatório Consolidado das Features 1, 2, 3 e 4</h2>
+  </div>
+
+  <div class="meta">
+    <p><strong>Aluno:</strong> Leonardo da Silva Sousa</p>
+    <p><strong>Repositório GitHub:</strong> <span class="repo">https://github.com/LeonardoSSm/bibliotecaapi</span></p>
+    <p><strong>Data:</strong> 11/03/2026</p>
+    <p><strong>Objetivo:</strong> consolidar as evidências de atendimento dos requisitos dos PDFs das Features 1 a 4.</p>
+  </div>
+
+  <h2>Sumário</h2>
+  <ul>
+    <li>Feature 1 - TDD: Módulo de Reserva de Livros</li>
+    <li>Feature 2 - Integração e Orquestração com APIs externas</li>
+    <li>Feature 3 - Modularização e Design de APIs com DTOs</li>
+    <li>Feature 4 - Autenticação e Autorização com Spring Security</li>
+  </ul>
+
+  <div class="feature-box">
+    <h3>Feature 1 - TDD</h3>
+    <p>Implementação do módulo de reserva com ciclo Red-Green-Refactor, regras de negócio de disponibilidade, duplicidade e cancelamento, com testes unitários em GREEN.</p>
+  </div>
+
+  <div class="feature-box">
+    <h3>Feature 2 - Integração Externa</h3>
+    <p>Consumo de Google Books e Open Library via OpenFeign, com orquestração de dados internos e externos e cálculo de score de recomendação.</p>
+  </div>
+
+  <div class="feature-box">
+    <h3>Feature 3 - Multi-módulos + DTOs</h3>
+    <p>Refatoração para arquitetura multi-módulos (<code>common-domain</code>, <code>external-api-client</code>, <code>main-application</code>) e aplicação de DTOs de entrada e saída.</p>
+  </div>
+
+  <div class="feature-box">
+    <h3>Feature 4 - Segurança</h3>
+    <p>Autenticação HTTP Basic e autorização por roles (ADMIN/USER), com regras por URL/HttpMethod e validação de cenários 401, 403 e acessos permitidos.</p>
+  </div>
+
+  <div class="pagebreak"></div>
+  <div class="center">
+    <h1>Feature 1</h1>
+    <p>Módulo de Reserva de Livros com TDD</p>
+  </div>
+
+  <div class="pagebreak"></div>
+  <div class="center">
+    <h1>Feature 2</h1>
+    <p>Integração e Orquestração com APIs externas</p>
+  </div>
+
+  <div class="pagebreak"></div>
+  <div class="center">
+    <h1>Feature 3</h1>
+    <p>Modularização e Design de APIs com DTOs</p>
+  </div>
+
+  <div class="pagebreak"></div>
+  <div class="center">
+    <h1>Feature 4</h1>
+    <p>Autenticação e Autorização com Spring Security</p>
+  </div>
+</body>
+</html>
